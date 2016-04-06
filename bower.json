@@ -17,6 +17,10 @@
   },
   "homepage": "https://ace.c9.io/",
   "private": true,
+  "repository": {
+      "type": "git",
+      "url": "git://github.com/mplabs/ace-editor.git"
+    },
   "ignore": [
     "**/.*",
     "node_modules",
