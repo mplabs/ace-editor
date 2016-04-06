@@ -4,7 +4,9 @@
 
 In typical use, just add `<ace-editor>` in place of a plain `<textarea>`:
 
+```html
 <form>
     <ace-editor>Some default content...</ace-editor>
+```
 
 Use like you would any other input-element.
