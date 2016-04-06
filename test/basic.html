@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">,
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <title>ace-editor basic tests</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../ace-editor.html">
+
+    <style>
+    ace-editor {
+        width: 400px;
+        height: 300px;
+    }
+    </style>
+</head>
+<body>
+    <test-fixture id="basic">
+        <template>
+            <ace-editor tab-size="2" mode="javascript" theme="xcode">(() => console.log('hello, world!'))()</ace-editor>
+        </template>
+    </test-fixture>
+
+    <script>
+        suite('configuration', function() {
+            var f;
+
+            setup(function() {
+                f = fixture('basic');
+            });
+
+            test('tab-size set on editor', function() {
+                assert.strictEqual(+f.getAttribute('tab-size'), f._editor.getSession().getTabSize());
+            });
+
+            test('theme set on editor', function() {
+                assert.strictEqual('ace/theme/' + f.getAttribute('theme'), f._editor.getTheme());
+            });
+
+            test('content set on editor', function () {
+                assert.strictEqual("(() => console.log('hello, world!'))()", f._editor.getSession().getValue());
+            });
+        });
+    </script>
+</body>
+</html>

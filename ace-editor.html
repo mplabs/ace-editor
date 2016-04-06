@@ -1,0 +1,277 @@
+<link rel="import" href="../polymer/polymer.html">
+<!--
+`<ace-editor>` provides a full fledged code editor with syntax hightlighting and code-completion.
+
+In typical use, just add `<ace-editor>` in place of a plain `<textarea>`:
+
+<form>
+    <ace-editor>Some default content...</ace-editor>
+
+Use like you would any other input-element.
+
+@element ace-editor
+@demo
+-->
+
+<dom-module id="ace-editor">
+    <template>
+        <style is="custom-style">
+        :host {
+            position: relative;
+            display: block;
+        }
+
+        #editor {
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+        }
+        </style>
+
+        <div id="editor"><content id="contentNode"></content></div>
+
+    </template>
+
+    <script src="../ace-builds/src-min-noconflict/ace.js"></script>
+    <script>
+    Polymer({
+
+        is: 'ace-editor',
+
+        properties: {
+
+            /** Toggle line highlighting */
+            highlightActiveLine: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true,
+                observer: '_highlightActiveLineChanged'
+            },
+
+            /** Set the Programming Language Mode */
+            mode: {
+                type: String,
+                value: 'text',
+                reflectToAttribute: true,
+                observer: '_modeChanged'
+            },
+
+            /** Toggle the editor read-only */
+            readOnly: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+                observer: '_readOnlyChanged'
+            },
+
+            /** The current text selection */
+            selection: {
+                type: String,
+                value: null,
+                notify: true
+            },
+
+            /** Toggle ruler display */
+            showPrintMargin: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true,
+                notify: true,
+                observer: '_showPrintMarginChanged'
+            },
+
+            /** Toggle indent using spaces */
+            softTabs: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true,
+                notify: true,
+                observer: '_softTabsChanged'
+            },
+
+            /** Set the indent size */
+            tabSize: {
+                type: Number,
+                value: 4,
+                reflectToAttribute: true,
+                notify: true,
+                observer: '_tabSizeChanged'
+            },
+
+            /** Set the editor theme */
+            theme: {
+                type: String,
+                value: 'clouds',
+                reflectToAttribute: true,
+                observer: '_themeChanged'
+            },
+
+            /** The current editor content */
+            value: {
+                type: String,
+                value: null,
+                observer: '_valueChanged',
+                notify: true
+            },
+
+            /** Toggle word wrapping */
+            wordWrapping: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+                notify: true,
+                observer: '_wordWrappingChanged'
+            },
+
+            /** Ace editor instance */
+            _editor: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: false
+            }
+        },
+
+        listeners: {
+            'editor.change': '_handleChange',
+            'editor.changeSelection': '_handleChangeSelection',
+            'resize': 'resize'
+        },
+
+        attached: function() {
+            // this.set('value', this.$.contentNode.textContent);
+        },
+
+        ready: function() {
+            this._editor = ace.edit(this.$.editor);
+            this._editor.$blockScrolling = Infinity;
+            this._modeChanged();
+            this._readOnlyChanged();
+            this._showPrintMarginChanged();
+            this._softTabsChanged();
+            this._tabSizeChanged();
+            this._themeChanged();
+            this._wordWrappingChanged();
+        },
+
+        /**
+         * Finds some text in the editor and moves selection
+         *
+         *  The following options are available to you for your search parameters:
+         *  
+         *  * backwards:     Whether to search backwards from where cursor currently is. Defaults to false.
+         *  * wrap:          Whether to wrap the search back to the beginning when it hits the end. Defaults to true.
+         *  * caseSensitive: Whether the search ought to be case-sensitive. Defaults to false.
+         *  * wholeWord:     Whether the search matches only on whole words. Defaults to false.
+         *  * range:         The Range to search within. Set this to null for the whole document
+         *  * regExp:        Whether the search is a regular expression or not. Defaults to false.
+         *  * start:         The starting Range or cursor position to begin the search
+         *  * skipCurrent:   Whether or not to include the current line in the search. Default to false.
+         * 
+         * @param  {String} needle  The string or regular expression you're looking for
+         * @param  {Object} options Any number of search options
+         * @return {TextRange}
+         */
+        find: function(needle, options) {
+            if (!this._editor) return;
+
+            options = options || {};
+
+            var config = {
+                backwards: false,
+                wrap: true,
+                caseSensitive: false,
+                wholeWord: false,
+                range: this.selection || null,
+                regExp: false,
+                start: null,
+                skipCurrent: false
+            };
+
+            Object.keys(options)
+                .filter(options.hasOwnProperty)
+                .forEach(k => config[k] = options[k]);
+
+            return this._editor.find(needle, config);
+        },
+
+        /**
+         * Finds and replaces a string once
+         * 
+         * @param  {String} needle  The string or regular expression you're looking for
+         * @param  {String} replace The string you want needle to be replaced with
+         * @param  {Object} options Any number of search options (see `find()`)
+         * @return {Boolean}        Wether or not a string was replaced
+         */
+        replace: function (needle, replace, options) {
+            this.find(needle, options);
+            return !!this._editor.replace(replace);
+        },
+
+        /**
+         * Finds and replaces all occurences of a string
+         * 
+         * @param  {String} needle  The string or regular expression you're looking for
+         * @param  {String} replace The string you want needle to be replaced with
+         * @param  {Object} options Any number of search options (see `find()`)
+         * @return {Boolean}        Wether or not a string was replaced
+         */
+        replaceAll: function(needle, replace, options) {
+            this.find(needle, options);
+            return !!this._editor.replaceAll(replace);
+        },
+
+        /**
+         * Call this if you changed the editors size other than by window resize
+         */
+        resize: function() {
+            this._editor && this._editor.resize();
+        },
+
+        _handleChange: function () {
+            this.set('value', this._editor.getSession.getValue());
+        },
+
+        _handleChangeSelection: function() {
+            this.set('selection', this._editor.getTextRange(this._editor.getSelectionRange()));
+        },
+
+        _highlightActiveLineChanged: function() {
+            this._editor && this._editor.setHighlightActiveLine(this.highlightActiveLine);
+        },
+
+        _modeChanged: function() {
+            this._editor && this._editor.getSession().setMode("ace/mode/" + this.mode);
+        },
+
+        _readOnlyChanged: function() {
+            this._editor && this._editor.setReadOnly(this.readOnly);
+        },
+
+        _showPrintMarginChanged: function() {
+            this._editor && this._editor.setShowPrintMargin(this.showPrintMargin);
+        },
+
+        _softTabsChanged: function() {
+            this._editor && this._editor.getSession().setUseSoftTabs(this.softTabs);
+        },
+
+        _tabSizeChanged: function() {
+            this._editor && this._editor.getSession().setTabSize(this.tabSize);
+        },
+
+        _themeChanged: function() {
+            this._editor && this._editor.setTheme("ace/theme/" + this.theme);
+        },
+
+        _valueChanged: function() {
+            this._editor && this._editor.getSession().setValue(this.value);
+        },
+
+        _wordWrappingChanged: function() {
+            this._editor && this._editor.getSession().setUseWrapMode(this.wordWrapping);
+        }
+
+    });
+    </script>
+</dom-module>

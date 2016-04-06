@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    
+    <title>ace-editor demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+
+    <link rel="import" href="../ace-editor.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+        demo-snippet {
+            --demo-snippet-demo: {
+                background: var(--paper-grey-200);
+                padding: 8px;
+            };
+            --demo-snippet-code: {
+                max-height: 300px;
+            };
+        }
+
+        ace-editor {
+            min-height: 350px;
+        }
+    </style>
+
+</head>
+
+<body unresolved>
+    
+    <div class="vertical-section-container centered">
+        <h3>An ace-editor with javascript syntax highlighting, error hinting and soft parathesis.</h3>
+        <demo-snippet>
+            <template>
+<ace-editor mode="javascript" tab-size="2" theme="xcode">
+(function(document) {
+    'use strict';
+
+    var body = document.querySelector('body');
+
+    body.textContent = 'ace-edit is awesome!';
+
+}(document));
+</ace-editor>
+            </template>
+        </demo-snippet>
+    </div>
+
+    
+</body>
+</html>

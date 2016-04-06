@@ -1,0 +1,36 @@
+{
+  "name": "ace-editor",
+  "description": "Ace is an embeddable code editor written in JavaScript.",
+  "main": "ace-editor.html",
+  "moduleType": [],
+  "keywords": [
+    "code",
+    "editor",
+    "embeddable"
+  ],
+  "authors": [
+    "Fabian Jakobs <fabian@c9.io>"
+  ],
+  "license": {
+    "type": "BSD New",
+    "url": "http://opensource.org/licenses/BSD-3-Clause"
+  },
+  "homepage": "https://ace.c9.io/",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.1.0",
+    "ace-builds-bower-patched": "echoAlexey/ace-builds#^1.2.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "polymerelements/iron-demo-helpers#^1.2.3",
+    "web-component-tester": "polymer/web-component-tester#^4.2.2"
+  }
+}
